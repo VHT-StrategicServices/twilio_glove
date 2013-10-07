@@ -7,8 +7,8 @@ require_relative 'data_table'
 
 class Glove < Sinatra::Base
   register Sinatra::ConfigFile
-
   config_file 'config.yml'
+
   def initialize
     super
     Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
@@ -35,9 +35,9 @@ class Glove < Sinatra::Base
 
   private
   
-def log(text)
-  File.open('C:\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
-end
+  def log(text)
+    File.open('C:\\TwilioGlove\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
+  end
 
   def sms_success_message
     DataTable.add_record_to_data(params)
@@ -55,7 +55,7 @@ end
   end
 
   def sms_failed_message
-    puts "#{params[:From]} - not registered or not activated"
+    log "#{params[:From]} - not registered or not activated"
     Twilio::TwiML::Response.new do |r|
       r.Sms settings.sms_failure
     end.text

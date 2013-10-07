@@ -1,13 +1,10 @@
 require 'win32/daemon'
-#require './glove.rb'
 begin
-
-def log(text)
-  File.open('C:\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
-end
-
   require_relative 'glove'
 
+  def log(text)
+    File.open('C:\\TwilioGlove\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
+  end
 
   include Win32
 
