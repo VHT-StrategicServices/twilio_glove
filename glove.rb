@@ -14,6 +14,9 @@ class Glove < Sinatra::Base
     Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
     log "Glove has been initialized"
   end
+  
+  before do
+  end
 
   get '/test' do
     message = "the glove is ready to catch"
@@ -32,11 +35,19 @@ class Glove < Sinatra::Base
       sms_failed_message
     end
   end
+  
+  after do    
+    log_request request, status
+  end
 
   private
   
   def log(text)
     File.open('C:\\TwilioGlove\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
+  end
+
+  def log_request request, status
+    log "#{request.ip} - #{request.request_method} #{request.path_info}?#{request.query_string} - #{params[:Body]} - #{status}"
   end
 
   def sms_success_message
