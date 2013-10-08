@@ -133,6 +133,7 @@ class Glove < Sinatra::Base
       mention_termination = body.index(/\W/, index_of_at + 1)
       if mention_termination.nil?
         length_of_mention = body.length - index_of_at
+        mention_termination = body.length
       else
         length_of_mention = mention_termination - index_of_at
       end

@@ -59,15 +59,55 @@ describe 'The Glove App' do
       expect(last_response.body).to include("Ok. Got it!")
     end
 
-    it "sends a mention sms message" do
-      Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
+    describe 'mention sms messages' do
+      it "sends a mention sms message" do
+        Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
 
-      get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@roverfield - Hello"}
+        get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@roverfield - Hello"}
 
-      expect(last_response).to be_ok
-      expect(last_response.body).to include("to=\"+13307772200\"")
-      expect(last_response.body).to include("@jcron said - @roverfield - Hello")
-      expect(last_response.body).to include("Ok. Got it!")
+        expect(last_response).to be_ok
+        expect(last_response.body).to include("to=\"+13307772200\"")
+        expect(last_response.body).to include("@jcron said - @roverfield - Hello")
+        expect(last_response.body).to include("Ok. Got it!")
+      end
+
+      it 'finds multiple mentions separated by a space' do
+        Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
+        Register.stub(:mentioned_phone_number).with("@nkennedy").and_return("+12167770022")
+
+        get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@roverfield @nkennedy - Hello"}
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to include("to=\"+13307772200\"")
+        expect(last_response.body).to include("to=\"+12167770022\"")
+        expect(last_response.body).to include("@jcron said - @roverfield @nkennedy - Hello")
+        expect(last_response.body).to include("Ok. Got it!")
+      end
+
+      it 'finds multiple mentions separated by punctuation' do
+        Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
+        Register.stub(:mentioned_phone_number).with("@nkennedy").and_return("+12167770022")
+
+        get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@roverfield,@nkennedy - Hello"}
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to include("to=\"+13307772200\"")
+        expect(last_response.body).to include("to=\"+12167770022\"")
+        expect(last_response.body).to include("@jcron said - @roverfield,@nkennedy - Hello")
+        expect(last_response.body).to include("Ok. Got it!")
+      end
+
+      it 'finds the mention at the end of the message' do
+        Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
+
+        get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "Hello - @roverfield"}
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to include("to=\"+13307772200\"")
+        expect(last_response.body).to include("@jcron said - Hello - @roverfield")
+        expect(last_response.body).to include("Ok. Got it!")
+      end
+
     end
 
   end
