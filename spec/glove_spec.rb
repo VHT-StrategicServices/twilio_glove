@@ -9,6 +9,8 @@ describe 'The Glove App' do
     Glove
   end
 
+  FROM_PHONE_NUMBER = "+13306702200"
+
   before :each do
     file = double("File")
     File.stub(:open).and_yield(file)
@@ -23,31 +25,80 @@ describe 'The Glove App' do
   end
 
   it "returns a failed sms message when not activated" do
-    Register.stub(:is_activated?).with("3306702200").and_return(false)
+    Register.stub(:is_activated?).with(FROM_PHONE_NUMBER).and_return(false)
 
-    get '/glove/accept', params={:From => "3306702200"}
+    get '/glove/accept', params={:From => FROM_PHONE_NUMBER}
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("Something bad happened. Message not posted :(")
   end
 
   it "returns a list of users sms message" do
-    Register.stub(:is_activated?).with("3306702200").and_return(true)
+    Register.stub(:is_activated?).with(FROM_PHONE_NUMBER).and_return(true)
     Register.stub(:all_users).and_return(["@jcron", "@roverfield"])
 
-    get '/glove/accept', params={:From => "3306702200", :Body => "@@users"}
+    get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@@users"}
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("@jcron\r\n@roverfield")
   end
 
-  #it "returns a success sms message when activated" do
-  #  Register.stub(:is_activated?).with("3306702200").and_return(true)
-  #  DataTable.stub(:add_record_to_data)
-  #
-  #  get '/glove/accept', params={:From => "3306702200", :Body => "Hello"}
-  #
-  #  expect(last_response).to be_ok
-  #  expect(last_response.body).to include("Ok. Got it!")
-  #end
+  describe 'success messages' do
+
+    before :each do
+      Register.stub(:is_activated?).with(FROM_PHONE_NUMBER).and_return(true)
+      DataTable.stub(:add_record_to_data)
+      Register.stub(:mentioned_by).with(FROM_PHONE_NUMBER).and_return("jcron")
+      Register.stub(:can_user_broadcast?).with(FROM_PHONE_NUMBER).and_return(false)
+    end
+
+    it "returns a success sms message" do
+      get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "Hello"}
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include("Ok. Got it!")
+    end
+
+    it "sends a mention sms message" do
+      Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
+
+      get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@roverfield - Hello"}
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include("to=\"+13307772200\"")
+      expect(last_response.body).to include("@jcron said - @roverfield - Hello")
+      expect(last_response.body).to include("Ok. Got it!")
+    end
+
+  end
+
+  describe 'broadcast to all users' do
+    before :each do
+      Register.stub(:is_activated?).with(FROM_PHONE_NUMBER).and_return(true)
+      DataTable.stub(:add_record_to_data)
+      Register.stub(:mentioned_by).with(FROM_PHONE_NUMBER).and_return("jcron")
+    end
+
+    it "does not broadcast if user cannot broadcast" do
+      Register.stub(:can_user_broadcast?).with(FROM_PHONE_NUMBER).and_return(false)
+      Register.stub(:mentioned_phone_number).with("@vht").and_return(nil)
+
+      get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@vht - Hello"}
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include("Ok. Got it!")
+    end
+
+    it "broadcasts to all users" do
+      Register.stub(:can_user_broadcast?).with(FROM_PHONE_NUMBER).and_return(true)
+      Register.stub(:all_active_users_except).with(FROM_PHONE_NUMBER).and_return(["+13307770000", "+12167770000"])
+
+      get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@vht - Hello"}
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include("to=\"+13307770000\"")
+      expect(last_response.body).to include("to=\"+12167770000\"")
+      expect(last_response.body).to include("@jcron said - @vht - Hello")
+    end
+  end
 end

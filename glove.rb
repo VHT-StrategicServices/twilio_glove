@@ -107,9 +107,9 @@ class Glove < Sinatra::Base
 
   def mention_sms response, mentioned_by, mentioned_phone_number
     mentions_sms = "@#{mentioned_by} said - #{params[:Body]}"
-	get_sms_messages(mentions_sms).each {|message|
-	  response.Sms message, :to => mentioned_phone_number unless mentioned_phone_number.nil?
-	}
+	  get_sms_messages(mentions_sms).each {|message|
+	    response.Sms message, :to => mentioned_phone_number unless mentioned_phone_number.nil?
+	  }
   end
   
   def get_sms_messages message
