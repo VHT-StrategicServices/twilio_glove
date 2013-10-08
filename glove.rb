@@ -11,12 +11,12 @@ class Glove < Sinatra::Base
 
   def initialize
     super
-	begin
-	  Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
-	  log "Glove has been initialized"
-	rescue Exception => err
-	  log_exception err
-	end
+    begin
+      Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
+      log "Glove has been initialized"
+    rescue Exception => err
+      log_exception err
+    end
   end
   
   before do
@@ -30,19 +30,19 @@ class Glove < Sinatra::Base
   end
 
   get '/glove/accept' do
-	begin
-  	  if Register.is_activated?(params[:From])
-	    if params[:Body].downcase.include?(settings.retrieve_all_users_tag)
-		  sms_users_message
-	    else
-		  sms_success_message
-	    end
-	  else
-	    sms_failed_message
-	  end
-	rescue Exception => err
-	  log_exception err
-	end
+    begin
+      if Register.is_activated?(params[:From])
+        if params[:Body].downcase.include?(settings.retrieve_all_users_tag)
+          sms_users_message
+        else
+          sms_success_message
+        end
+      else
+        sms_failed_message
+      end
+    rescue Exception => err
+      log_exception err
+    end
   end
   
   after do
@@ -56,8 +56,8 @@ class Glove < Sinatra::Base
   end
   
   def log_exception(exception)
-	log exception.message
-	log exception.backtrace
+    log exception.message
+    log exception.backtrace
   end
 
   def log_request where, request, status
