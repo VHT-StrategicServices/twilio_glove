@@ -11,11 +11,16 @@ class Glove < Sinatra::Base
 
   def initialize
     super
-    Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
-    log "Glove has been initialized"
+	begin
+	  Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
+	  log "Glove has been initialized"
+	rescue Exception => err
+	  log_exception err
+	end
   end
   
   before do
+    log_request "Before", request, status
   end
 
   get '/test' do
@@ -25,19 +30,23 @@ class Glove < Sinatra::Base
   end
 
   get '/glove/accept' do
-    if Register.is_activated?(params[:From])
-      if params[:Body].downcase.include?(settings.retrieve_all_users_tag)
-        sms_users_message
-      else
-        sms_success_message
-      end
-    else
-      sms_failed_message
-    end
+	begin
+  	  if Register.is_activated?(params[:From])
+	    if params[:Body].downcase.include?(settings.retrieve_all_users_tag)
+		  sms_users_message
+	    else
+		  sms_success_message
+	    end
+	  else
+	    sms_failed_message
+	  end
+	rescue Exception => err
+	  log_exception err
+	end
   end
   
-  after do    
-    log_request request, status
+  after do
+    log_request "After", request, status
   end
 
   private
@@ -45,9 +54,14 @@ class Glove < Sinatra::Base
   def log(text)
     File.open('C:\\TwilioGlove\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
   end
+  
+  def log_exception(exception)
+	log exception.message
+	log exception.backtrace
+  end
 
-  def log_request request, status
-    log "#{request.ip} - #{request.request_method} #{request.path_info}?#{request.query_string} - #{params[:Body]} - #{status}"
+  def log_request where, request, status
+    log "#{where} - #{request.ip} - #{request.request_method} #{request.path_info}?#{request.query_string} - #{params[:Body]} - #{status}"
   end
 
   def sms_success_message
