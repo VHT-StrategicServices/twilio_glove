@@ -23,14 +23,16 @@ class TwilioMessage
   def sms_users_message
     users = Register.all_users
     Twilio::TwiML::Response.new do |response|
-      response.Sms users.join("\r\n")
+      get_sms_messages(users.join("\r\n")).each {|message|
+        response.Sms message
+      }
     end.text
   end
 
   def sms_failed_message
     log "#{@params[:From]} - not registered or not activated"
-    twilio_response = Twilio::TwiML::Response.new do |r|
-      r.Sms @settings.sms_failure
+    twilio_response = Twilio::TwiML::Response.new do |response|
+      response.Sms @settings.sms_failure
     end.text
     log twilio_response
     twilio_response
