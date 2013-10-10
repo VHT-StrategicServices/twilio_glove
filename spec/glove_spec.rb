@@ -43,6 +43,19 @@ describe 'The Glove App' do
     expect(last_response.body).to include("@jcron\r\n@roverfield")
   end
 
+  it "returns multiple messages when the user list is longer than 160 chars" do
+    Register.stub(:is_activated?).with(FROM_PHONE_NUMBER).and_return(true)
+    Register.stub(:all_users).and_return(["@jcron", "@roverfield", "@nkennedy", "@mbiro", "@kseiberling", "@msomody",
+                                          "@Whayden", "@ksjodin", "@nhoward", "@tmcnall", "@kmann", "@slambert",
+                                          "@staylor", "@kshinseki", "@dholub", "@ezahirsky", "@cnarvaez", "@cswansiger"])
+
+    get '/glove/accept', params={:From => FROM_PHONE_NUMBER, :Body => "@@users"}
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include(">@jcron\r\n@roverfield\r\n@nkennedy\r\n@mbiro\r\n@kseiberling\r\n@msomody\r\n@Whayden\r\n@ksjodin\r\n@nhoward\r\n@tmcnall\r\n@kmann\r\n@slambert\r\n@staylor\r\n@kshinseki\r\n@dholub\r\n<")
+    expect(last_response.body).to include(">@ezahirsky\r\n@cnarvaez\r\n@cswansiger<")
+  end
+
   describe 'success messages' do
 
     before :each do
@@ -105,6 +118,21 @@ describe 'The Glove App' do
         expect(last_response).to be_ok
         expect(last_response.body).to include("to=\"+13307772200\"")
         expect(last_response.body).to include("@jcron said - Hello - @roverfield")
+        expect(last_response.body).to include("Ok. Got it!")
+      end
+
+      it 'sends multiple messages if longer than 160 characters' do
+        Register.stub(:mentioned_phone_number).with("@roverfield").and_return("+13307772200")
+
+        get '/glove/accept', params={
+            :From => FROM_PHONE_NUMBER,
+            :Body => "@roverfield - this message is going to be 160 characters long when i'm through with it. that's because twilio will only accept messages with 160 chars or less."
+        }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to include("to=\"+13307772200\"")
+        expect(last_response.body).to include(">@jcron said - @roverfield - this message is going to be 160 characters long when i'm through with it. that's because twilio will only accept messages with 160 c<")
+        expect(last_response.body).to include(">hars or less.<")
         expect(last_response.body).to include("Ok. Got it!")
       end
 

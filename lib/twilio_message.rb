@@ -23,7 +23,7 @@ class TwilioMessage
   def sms_users_message
     users = Register.all_users
     Twilio::TwiML::Response.new do |response|
-      get_sms_messages(users.join("\r\n")).each {|message|
+      get_users_sms_messages(users.join("\r\n")).each {|message|
         response.Sms message
       }
     end.text
@@ -74,6 +74,22 @@ class TwilioMessage
         message = message[160..message.length]
       else
         messages << message
+        break
+      end
+    end
+    messages
+  end
+
+  def get_users_sms_messages users
+    messages = []
+    while users.length > 0
+      if users.length > 160
+        head = users[0..159]
+        index_of_last_at = head.rindex('@')
+        messages << users[0..index_of_last_at - 1]
+        users = users[(index_of_last_at)..users.length]
+      else
+        messages << users
         break
       end
     end
