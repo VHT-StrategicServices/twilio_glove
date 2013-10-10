@@ -12,9 +12,9 @@ describe 'The Glove App' do
   FROM_PHONE_NUMBER = "+13306702200"
 
   before :each do
-    #file = double("File")
-    #File.stub(:open).and_yield(file)
-    #file.stub(:puts)
+    file = double("File")
+    File.stub(:open).and_yield(file)
+    file.stub(:puts)
   end
 
   it "has a test endpoint" do
