@@ -3,24 +3,6 @@ require 'active_record'
 class Register < ActiveRecord::Base
   self.table_name  = "Register"
   #self.primary_key = "username"
-  CONNECTION_NAME = 'twilio_glove'
-
-  # this should be moved out of here
-  def self.establish_connection(opts)
-    ActiveRecord::Base.configurations[CONNECTION_NAME] = opts
-    ActiveRecord::Base.establish_connection(CONNECTION_NAME)
-  end
-
-  def self.establish_sqlserver_connection(host, database, username, password, opts = {})
-    establish_connection({
-                             :adapter => 'sqlserver',
-                             :mode => 'dblib',
-                             :host => host,
-                             :database => database,
-                             :username => username,
-                             :password => password
-                         }.merge(opts))
-  end
 
   def self.is_activated?(phone_number)
     register = Register.find(:first, :conditions => [ "phone = ?", phone_number])

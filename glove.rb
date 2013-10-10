@@ -4,15 +4,16 @@ require 'sinatra/config_file'
 require 'twilio-ruby'
 require_relative 'register'
 require_relative 'data_table'
+require_relative 'lib/fiat_register'
 
 class Glove < Sinatra::Base
   register Sinatra::ConfigFile
   config_file 'config.yml'
 
   def initialize
-    super
     begin
-      Register.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
+      super
+      FiatRegister.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
       log "Glove has been initialized"
     rescue Exception => err
       log_exception err
@@ -61,7 +62,11 @@ class Glove < Sinatra::Base
   end
 
   def log_request where, request, status
-    log "#{where} - #{request.ip} - #{request.request_method} #{request.path_info}?#{request.query_string} - #{params[:Body]} - #{status}"
+    begin
+      log "#{where} - #{request.ip} - #{request.request_method} #{request.path_info}?#{request.query_string} - #{params[:Body]} - #{status}"
+    rescue Exception => err
+      log_exception err
+    end
   end
 
   def sms_success_message
