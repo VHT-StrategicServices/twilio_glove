@@ -4,6 +4,7 @@ class DataTable < ActiveRecord::Base
   self.table_name="data"
 
   def self.add_record_to_data(parameters)
+    log "add_record_to_data"
     DataTable.create(
         :smsdatetime => Time.now,
         :accountsid => parameters[:AccountSid],

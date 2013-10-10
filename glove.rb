@@ -13,6 +13,7 @@ class Glove < Sinatra::Base
   def initialize
     begin
       super
+      log "Establishing connection to database..."
       FiatRegister.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
       log "Glove has been initialized"
     rescue Exception => err
@@ -71,24 +72,30 @@ class Glove < Sinatra::Base
 
   def sms_success_message
     DataTable.add_record_to_data(params)
-    Twilio::TwiML::Response.new do |response|
+    twilio_response = Twilio::TwiML::Response.new do |response|
       response = mentions(response)
       response.Sms settings.sms_success unless settings.send_success_message == false
     end.text
+    log twilio_response
+    twilio_response
   end
 
   def sms_users_message
     users = Register.all_users
-    Twilio::TwiML::Response.new do |response|
+    twilio_response = Twilio::TwiML::Response.new do |response|
       response.Sms users.join("\r\n")
     end.text
+    log twilio_response
+    twilio_response
   end
 
   def sms_failed_message
     log "#{params[:From]} - not registered or not activated"
-    Twilio::TwiML::Response.new do |r|
+    twilio_response = Twilio::TwiML::Response.new do |r|
       r.Sms settings.sms_failure
     end.text
+    log twilio_response
+    twilio_response
   end
 
   def mentions response
