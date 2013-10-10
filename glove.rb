@@ -82,11 +82,9 @@ class Glove < Sinatra::Base
 
   def sms_users_message
     users = Register.all_users
-    twilio_response = Twilio::TwiML::Response.new do |response|
+    Twilio::TwiML::Response.new do |response|
       response.Sms users.join("\r\n")
     end.text
-    log twilio_response
-    twilio_response
   end
 
   def sms_failed_message
