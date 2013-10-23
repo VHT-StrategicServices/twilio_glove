@@ -47,6 +47,15 @@ class Glove < Sinatra::Base
       log_exception err
     end
   end
+
+  get '/glove/reject' do
+    begin
+      twilio_message = TwilioMessage.new params, settings
+      twilio_message.voice_reject_message
+    rescue Exception => err
+      log_exception err
+    end
+  end
   
   after do
     log_request "After", request, status

@@ -12,8 +12,8 @@ class TwilioMessage
 
   def sms_success_message
     DataTable.add_record_to_data(@params)
+    send_mentions
     twilio_response = Twilio::TwiML::Response.new do |response|
-      response = mentions(response)
       response.Sms @settings.sms_success unless @settings.send_success_message == false
     end.text
     log twilio_response
@@ -38,32 +38,39 @@ class TwilioMessage
     twilio_response
   end
 
+  def voice_reject_message
+    twilio_response = Twilio::TwiML::Response.new do |response|
+      response.Reject :reason => "busy"
+    end.text
+    twilio_response
+  end
+
   private
 
-  def mentions response
+  def send_mentions
     if @settings.mentions == true
       mentioned_by = Register.mentioned_by(@params[:From])
       mentions = retrieve_mentions @params[:Body]
       if (not mentions.index("@vht").nil?) and Register.can_user_broadcast?(@params[:From])
         active_users = Register.all_active_users_except @params[:From]
         active_users.each {|user|
-          mention_sms response, mentioned_by, user
+          mention_sms mentioned_by, user
         }
       else
         mentions.each { |mention|
           mentioned_phone_number = Register.mentioned_phone_number(mention)
-          mention_sms response, mentioned_by, mentioned_phone_number
+          mention_sms mentioned_by, mentioned_phone_number
         }
       end
     end
-    response
   end
 
-  def mention_sms response, mentioned_by, mentioned_phone_number
-    mentions_sms = "@#{mentioned_by} said - #{@params[:Body]}"
-	  get_sms_messages(mentions_sms).each {|message|
-	    response.Sms message, :to => mentioned_phone_number unless mentioned_phone_number.nil?
-	  }
+  def mention_sms mentioned_by, mentioned_phone_number
+    unless mentioned_phone_number.nil?
+      mentions_sms = "@#{mentioned_by} said - #{@params[:Body]}"
+      @client = Twilio::REST::Client.new @settings.account_sid, @settings.auth_token
+      @client.account.messages.create(:body => mentions_sms, :to => mentioned_phone_number, :from => @settings.sms_from_number)
+    end
   end
 
   def get_sms_messages message
