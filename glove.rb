@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra/base'
 require 'sinatra/config_file'
+require 'builder'
 require_relative 'lib/register'
 require_relative 'lib/fiat_register'
 require_relative 'lib/domain_helper'
@@ -9,6 +10,7 @@ require_relative 'lib/twilio_message'
 class Glove < Sinatra::Base
   register Sinatra::ConfigFile
   config_file 'config.yml'
+  set :public_folder => "public", :static => true
 
   def initialize
     begin
@@ -55,6 +57,32 @@ class Glove < Sinatra::Base
     rescue Exception => err
       log_exception err
     end
+  end
+
+  get '/feed/rss' do
+    @posts = DataTable.all + DataArchiveTable.all
+    builder :rss
+  end
+
+
+  helpers do
+    def protected!
+      return if authorized?
+      headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+      halt 401, "Not authorized\n"
+    end
+
+    def authorized?
+      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['feed', 'B1sCu1t']
+    end
+  end
+
+  get '/posts/:id' do
+    protected!
+    @post = DataTable.where(smssid: params[:id]).first
+    @post = DataArchiveTable.where(smssid: params[:id]).first if @post.nil?
+    erb :post
   end
   
   after do

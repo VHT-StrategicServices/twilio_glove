@@ -14,7 +14,7 @@ class TwilioMessage
     DataTable.add_record_to_data(@params)
     send_mentions
     twilio_response = Twilio::TwiML::Response.new do |response|
-      response.Sms @settings.sms_success unless @settings.send_success_message == false
+      response.Message @settings.sms_success if @settings.send_success_message
     end.text
     log twilio_response
     twilio_response
@@ -23,32 +23,29 @@ class TwilioMessage
   def sms_users_message
     users = Register.all_users
     Twilio::TwiML::Response.new do |response|
-      get_users_sms_messages(users.join("\r\n")).each {|message|
-        response.Sms message
-      }
+      response.Message users.join(" ")
     end.text
   end
 
   def sms_failed_message
     log "#{@params[:From]} - not registered or not activated"
     twilio_response = Twilio::TwiML::Response.new do |response|
-      response.Sms @settings.sms_failure
+      response.Message @settings.sms_failure
     end.text
     log twilio_response
     twilio_response
   end
 
   def voice_reject_message
-    twilio_response = Twilio::TwiML::Response.new do |response|
+    Twilio::TwiML::Response.new do |response|
       response.Reject :reason => "busy"
     end.text
-    twilio_response
   end
 
   private
 
   def send_mentions
-    if @settings.mentions == true
+    if @settings.mentions
       mentioned_by = Register.mentioned_by(@params[:From])
       mentions = retrieve_mentions @params[:Body]
       if (not mentions.index("@vht").nil?) and Register.can_user_broadcast?(@params[:From])
@@ -67,9 +64,19 @@ class TwilioMessage
 
   def mention_sms mentioned_by, mentioned_phone_number
     unless mentioned_phone_number.nil?
-      mentions_sms = "@#{mentioned_by} said - #{@params[:Body]}"
       @client = Twilio::REST::Client.new @settings.account_sid, @settings.auth_token
-      @client.account.messages.create(:body => mentions_sms, :to => mentioned_phone_number, :from => @settings.sms_from_number)
+      mentions_sms = "@#{mentioned_by} said - #{@params[:Body]}"
+      medias = Media.where(message_sid: @params[:MessageSid])
+      urls = []
+      medias.each do |media|
+        urls << media.url
+      end
+      @client.account.messages.create(
+          :body => mentions_sms,
+          :to => mentioned_phone_number,
+          :from => @settings.sms_from_number,
+          :media_url => urls
+      )
     end
   end
 
@@ -81,22 +88,6 @@ class TwilioMessage
         message = message[160..message.length]
       else
         messages << message
-        break
-      end
-    end
-    messages
-  end
-
-  def get_users_sms_messages users
-    messages = []
-    while users.length > 0
-      if users.length > 160
-        head = users[0..159]
-        index_of_last_at = head.rindex('@')
-        messages << users[0..index_of_last_at - 1]
-        users = users[(index_of_last_at)..users.length]
-      else
-        messages << users
         break
       end
     end

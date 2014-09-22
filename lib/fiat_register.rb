@@ -1,7 +1,7 @@
 require 'active_record'
 
 class FiatRegister < ActiveRecord::Base
-  CONNECTION_NAME = 'twilio_glove'
+  CONNECTION_NAME = :twilio_glove
 
   def self.establish_sqlserver_connection(host, database, username, password, opts = {})
     options = {
@@ -12,7 +12,7 @@ class FiatRegister < ActiveRecord::Base
         :username => username,
         :password => password
     }.merge(opts)
-    ActiveRecord::Base.configurations[CONNECTION_NAME] = options
-    ActiveRecord::Base.establish_connection(CONNECTION_NAME)
+    # ActiveRecord::Base.configurations[CONNECTION_NAME] = options
+    ActiveRecord::Base.establish_connection(options)
   end
 end

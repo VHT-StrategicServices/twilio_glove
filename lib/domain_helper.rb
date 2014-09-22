@@ -1,5 +1,5 @@
 def log(text)
-  File.open('C:\\TwilioGlove\\log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
+  File.open('/home/fiat/TwilioGlove/log.txt', 'a') { |f| f.puts "#{Time.now}: #{text}" }
 end
 
 def log_exception(exception)

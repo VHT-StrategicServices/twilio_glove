@@ -17,4 +17,6 @@ config.yml
 .yardoc
 _yardoc
 doc/
+
 .idea/
+.DS_Store
