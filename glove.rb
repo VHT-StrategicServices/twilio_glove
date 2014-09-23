@@ -81,7 +81,6 @@ class Glove < Sinatra::Base
   end
 
   get '/feed/rss' do
-    protected!
     @posts = DataTable.all + DataArchiveTable.all
     builder :rss
   end
@@ -93,7 +92,11 @@ class Glove < Sinatra::Base
     @images = Media.where(message_sid: @post.smssid)
     erb :post
   end
-  
+
+  get '/slideshow' do
+    erb :slide_show
+  end
+
   after do
     log_request "After", request, status
   end

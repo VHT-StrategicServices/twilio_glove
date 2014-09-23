@@ -68,11 +68,13 @@ GEM
       ffi
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES
   activerecord
   activerecord-sqlserver-adapter
+  builder
   rack-test
   rake
   rspec
