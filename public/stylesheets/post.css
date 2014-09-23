@@ -1,13 +1,39 @@
+html {
+    background-color: #969696;
+}
+
 #message {
     text-align: center;
     font-size: 24px;
     font-family: Verdana, Arial, Helvetica, sans-serif;
-    color: #000;
+    color: #CACACA;
     margin: 20px;
 }
 
 #images {
     text-align: center;
+}
+
+.polaroid {
+    position: relative;
+    /*width: 220px;*/
+}
+
+.polaroid img {
+    border: 10px solid #fff;
+    /*border-bottom: 45px solid #fff;*/
+    -webkit-box-shadow: 3px 3px 3px #777;
+    -moz-box-shadow: 3px 3px 3px #777;
+    box-shadow: 3px 3px 3px #777;
+}
+
+.polaroid p {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    bottom: 0px;
+    /*font: 400 18px/1 'Kaushan Script', cursive;*/
+    color: #888;
 }
 
 img {
