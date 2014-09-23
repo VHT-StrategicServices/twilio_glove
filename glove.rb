@@ -8,15 +8,19 @@ require_relative 'lib/domain_helper'
 require_relative 'lib/twilio_message'
 
 class Glove < Sinatra::Base
+  set :public_folder => "public"
+  set :static => true
+  set :root => File.dirname(__FILE__)
   register Sinatra::ConfigFile
   config_file 'config.yml'
-  set :public_folder => "public", :static => true
 
   def initialize
     begin
       super
       log "Establishing connection to database..."
       FiatRegister.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
+      Dir.chdir "/home/fiat/TwilioGlove"
+      log Dir.pwd
       log "Glove has been initialized"
     rescue Exception => err
       log_exception err
@@ -25,6 +29,23 @@ class Glove < Sinatra::Base
   
   before do
     log_request "Before", request, status
+    log Dir.pwd
+    log File.dirname(__FILE__)
+    log settings.public_folder
+    log settings.root
+  end
+
+  helpers do
+    def protected!
+      return if authorized?
+      headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+      halt 401, "Not authorized\n"
+    end
+
+    def authorized?
+      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['feed', 'B1sCu1t']
+    end
   end
 
   get '/test' do
@@ -60,28 +81,16 @@ class Glove < Sinatra::Base
   end
 
   get '/feed/rss' do
+    protected!
     @posts = DataTable.all + DataArchiveTable.all
     builder :rss
-  end
-
-
-  helpers do
-    def protected!
-      return if authorized?
-      headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
-      halt 401, "Not authorized\n"
-    end
-
-    def authorized?
-      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['feed', 'B1sCu1t']
-    end
   end
 
   get '/posts/:id' do
     protected!
     @post = DataTable.where(smssid: params[:id]).first
     @post = DataArchiveTable.where(smssid: params[:id]).first if @post.nil?
+    @images = Media.where(message_sid: @post.smssid)
     erb :post
   end
   

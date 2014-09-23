@@ -1,4 +1,21 @@
-<div>
-  <span><%= @post.smssid %></span>
-  <span><%= @post.body %></span>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VHT Feed</title>
+  <link rel="stylesheet" href="/stylesheets/post.css"/>
+</head>
+<body>
+
+    <div id="message">
+      <%= @post.body %>
+    </div>
+    <div id="images">
+      <% @images.each do |image| %>
+          <a href="<%= image.url %>"><img src="<%= image.url %>"/></a>
+      <% end %>
+    </div>
+    <div id="time">
+      <%= @post.smsdatetime.localtime.strftime("%l:%M %p - %e %b %Y") %>
+    </div>
+
+</body></html>
