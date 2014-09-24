@@ -81,11 +81,11 @@ class Glove < Sinatra::Base
   end
 
   get '/feed/rss' do
-    @posts = DataTable.all + DataArchiveTable.all
+    @posts = get_posts
     builder :rss
   end
 
-  get '/posts/:id' do
+  get '/post/:id' do
     protected!
     @post = DataTable.where(smssid: params[:id]).first
     @post = DataArchiveTable.where(smssid: params[:id]).first if @post.nil?
@@ -93,11 +93,19 @@ class Glove < Sinatra::Base
     erb :post
   end
 
-  get '/slideshow' do
-    erb :slide_show
+  get '/posts' do
+    protected!
+    @posts = get_posts
+    @images = Media.all
+    erb :posts
   end
 
   after do
     log_request "After", request, status
+  end
+
+  private
+  def get_posts
+    DataTable.order('smsdatetime DESC').all + DataArchiveTable.order('smsdatetime DESC').all
   end
 end

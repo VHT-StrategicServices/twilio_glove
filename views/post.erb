@@ -1,24 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>VHT Feed</title>
-  <link rel="stylesheet" href="/stylesheets/post.css"/>
-  <link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
-</head>
-<body>
-
-    <% if @images.length <= 0 %>
-        <div id="message">
-          <%= @post.body %>
-        </div>
-    <% end %>
-    <div id="images">
-      <% @images.each do |image| %>
-          <div class="polaroid"><a href="<%= image.url %>"><img src="<%= image.url %>"/></a></div>
-      <% end %>
+<script type="text/javascript" src="/javascripts/post.js"></script>
+<% if @images.length <= 0 %>
+    <div id="message">
+      <%= @post.body %>
     </div>
-    <div id="time">
-      <%= @post.smsdatetime.localtime.strftime("%l:%M %p - %e %b %Y") %>
-    </div>
-
-</body></html>
+<% end %>
+<div id="images">
+  <% @images.each do |image| %>
+      <div class="polaroid hide">
+        <div id="polaroid_background"></div>
+        <div id="polaroid_image"><a href="<%= image.url %>"><img class="hide" src="<%= image.url %>"/></a></div>
+        <div id="caption"><%= @post.body %></div>
+      </div>
+  <% end %>
+</div>
+<div id="time">
+  <%= @post.smsdatetime.localtime.strftime("%l:%M %p - %e %b %Y") %>
+</div>

@@ -1,5 +1,11 @@
+@font-face {
+    font-family: startrek;
+    src: url(/fonts/FEC_____.TTF);
+}
+
 html {
-    background-color: #969696;
+    background: #969696 url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
+    /*background: #000;*/
 }
 
 #message {
@@ -16,30 +22,37 @@ html {
 
 .polaroid {
     position: relative;
-    /*width: 220px;*/
+    margin: 0 auto;
 }
 
-.polaroid img {
-    border: 10px solid #fff;
-    border-bottom: 45px solid #fff;
+#polaroid_image,
+#polaroid_background {
+    border: 20px solid #f0f0f0;
+    border-bottom: 60px solid #f0f0f0;
     -webkit-box-shadow: 4px 4px 6px rgba(0,0,0,.3);
     -moz-box-shadow: 4px 4px 6px rgba(0,0,0,.3);
     box-shadow: 4px 4px 6px rgba(0,0,0,.3);
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 750px;
+    position: absolute;
+    top: 50px;
 }
 
-.polaroid p {
+#caption {
     position: absolute;
     text-align: center;
-    width: 100%;
     bottom: 0;
-    font: 400 24px/.5 'Permanent Marker', cursive;
+    font: 22px/.75 'Permanent Marker', cursive;
     color: #464646;
+    top: 825px;
+    height: 60px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 img {
     height: 750px;
-    margin-left: 20px;
-    margin-right: 20px;
 }
 
 #time {
@@ -48,4 +61,59 @@ img {
     font-family: Verdana, Arial, Helvetica, sans-serif;
     color: #CACACA;
     margin: 20px;
+}
+
+.hide {
+    display:none;
+}
+
+#posts {
+    margin-left: 70px;
+}
+
+.post {
+    color: #fff;
+    margin: 10px;
+    postion: relative;
+    height: 130px;
+    width: 100%;
+    background-image: -ms-linear-gradient(bottom right, #C2C2C2 0%, #000000 100%);
+    background-image: -moz-linear-gradient(bottom right, #C2C2C2 0%, #000000 100%);
+    background-image: -o-linear-gradient(bottom right, #C2C2C2 0%, #000000 100%);
+    background-image: -webkit-gradient(linear, right bottom, left top, color-stop(0, #C2C2C2), color-stop(1, #000000));
+    background-image: -webkit-linear-gradient(bottom right, rgba(194,194,194,.5) 0%, rgba(0,0,0,0) 100%);
+    border-radius: 65px;
+    overflow:hidden;
+}
+
+.post div {
+    position: absolute;
+}
+
+.feed_image {
+    height :130px;
+    width: 130px;
+    background-size: contain;
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
+.feed_caption {
+    left: 250px;
+}
+
+.feed_text {
+    font: italic bold 30px Jura, Verdana, Arial, Helvetica, sans-serif;
+}
+
+.feed_timestamp {
+    font: bold 16px Verdana, Arial, Helvetica, sans-serif;
+    white-space:nowrap;
+}
+
+#posts_title {
+    color: #FFF;
+    font-family: startrek, Verdana, Arial, Helvitica, sans-serif;
+    font-size: 44px;
+    height: 55px;
 }

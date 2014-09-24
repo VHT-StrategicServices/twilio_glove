@@ -18,10 +18,10 @@ xml.rss :version => "2.0", "xmlns:atom" => "http://www.w3.org/2005/Atom" do
     @posts.each do |post|
       xml.item do
         xml.title post.smssid
-        xml.link "#{request.url.chomp request.path_info}/posts/#{post.smssid}"
+        xml.link "#{request.url.chomp request.path_info}/post/#{post.smssid}"
         xml.description post.smssid
         xml.pubDate Time.parse(post.smsdatetime.to_s).rfc822()
-        xml.guid "#{request.url.chomp request.path_info}/posts/#{post.smssid}"
+        xml.guid "#{request.url.chomp request.path_info}/post/#{post.smssid}"
       end
     end
   end
