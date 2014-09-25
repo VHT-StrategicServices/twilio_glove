@@ -1,18 +1,4 @@
+<script type="text/javascript" src="/javascripts/posts.js"></script>
+<div id="posts_title">vht feed</div>
 <div id="posts">
-  <div id="posts_title">vht feed</div>
-    <% @posts.each do |post| %>
-        <div class="post">
-            <% @images.select{|i|i.message_sid == post.smssid}.each do |image| %>
-                <div class="feed_image" style="background-image: url('<%= image.url %>')"></div>
-            <% end %>
-            <div class="feed_caption">
-              <blockquote>
-                <p class="feed_text"><%= post.body %>
-                  <br/>
-                  <span class="feed_timestamp"><%= post.smsdatetime.localtime.strftime("%l:%M %p - %e %b %Y") %></span>
-                </p>
-              </blockquote>
-            </div>
-        </div>
-    <% end %>
 </div>

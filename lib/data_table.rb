@@ -1,6 +1,7 @@
 require 'active_record'
 
 class DataTable < ActiveRecord::Base
+  self.primary_key = :smssid
   self.table_name="data"
 
   def self.add_record_to_data(parameters)
@@ -30,10 +31,12 @@ class DataTable < ActiveRecord::Base
 end
 
 class DataArchiveTable < ActiveRecord::Base
+  self.primary_key = :smssid
   self.table_name="data_archive"
 end
 
 class Media < ActiveRecord::Base
+  self.primary_key = :url
   self.table_name = "media"
 
   def self.add_media_records(parameters)

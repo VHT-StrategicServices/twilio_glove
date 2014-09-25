@@ -4,8 +4,12 @@
 }
 
 html {
-    background: #969696 url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
-    /*background: #000;*/
+    background: -ms-linear-gradient(left, rgba(0,0,0,0) 80%, rgba(0,0,0,1) 100%), url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
+    background: -moz-linear-gradient(left, rgba(0,0,0,0) 80%, rgba(0,0,0,1) 100%), url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
+    background: -o-linear-gradient(left, rgba(0,0,0,0) 80%, rgba(0,0,0,1) 100%), url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
+    background: -webkit-gradient(linear, left, left top, color-stop(0.8, rgba(0,0,0,0)), color-stop(1, rgba(0,0,0,1))), url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
+    background: -webkit-linear-gradient(left, rgba(0,0,0,0) 80%, rgba(0,0,0,1) 100%), url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
+    background: linear-gradient(left, rgba(0,0,0,0) 80%, rgba(0,0,0,1) 100%), url('/images/wood_texture_2_by_ftIsis_Stock.jpg');
 }
 
 #message {
@@ -65,6 +69,7 @@ img {
 
 .hide {
     display:none;
+    width: 0;
 }
 
 #posts {
@@ -73,15 +78,14 @@ img {
 
 .post {
     color: #fff;
-    margin: 10px;
-    postion: relative;
-    height: 130px;
-    width: 100%;
-    background-image: -ms-linear-gradient(bottom right, #C2C2C2 0%, #000000 100%);
-    background-image: -moz-linear-gradient(bottom right, #C2C2C2 0%, #000000 100%);
-    background-image: -o-linear-gradient(bottom right, #C2C2C2 0%, #000000 100%);
-    background-image: -webkit-gradient(linear, right bottom, left top, color-stop(0, #C2C2C2), color-stop(1, #000000));
-    background-image: -webkit-linear-gradient(bottom right, rgba(194,194,194,.5) 0%, rgba(0,0,0,0) 100%);
+    margin: 4px;
+    height: 136px;
+    width: 65%;
+    background-image: -ms-linear-gradient(bottom right, rgba(194,194,194,.35) 0%, rgba(0,0,0,0) 100%);
+    background-image: -moz-linear-gradient(bottom right, rgba(194,194,194,.35) 0%, rgba(0,0,0,0) 100%);
+    background-image: -o-linear-gradient(bottom right, rgba(194,194,194,.35) 0%, rgba(0,0,0,0) 100%);
+    background-image: -webkit-gradient(linear, right bottom, left top, color-stop(0, rgba(194,194,194,.35)), color-stop(1, rgba(0,0,0,0)));
+    background-image: -webkit-linear-gradient(bottom right, rgba(194,194,194,.35) 0%, rgba(0,0,0,0) 100%);
     border-radius: 65px;
     overflow:hidden;
 }
@@ -94,8 +98,9 @@ img {
     height :130px;
     width: 130px;
     background-size: contain;
-    background-position: left center;
+    background-position: center center;
     background-repeat: no-repeat;
+    margin: 5px;
 }
 
 .feed_caption {
@@ -116,4 +121,5 @@ img {
     font-family: startrek, Verdana, Arial, Helvitica, sans-serif;
     font-size: 44px;
     height: 55px;
+    margin-left: 70px;
 }

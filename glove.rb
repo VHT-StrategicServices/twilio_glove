@@ -20,7 +20,6 @@ class Glove < Sinatra::Base
       log "Establishing connection to database..."
       FiatRegister.establish_sqlserver_connection(settings.server_name, settings.database_name, settings.database_user, settings.database_password)
       Dir.chdir "/home/fiat/TwilioGlove"
-      log Dir.pwd
       log "Glove has been initialized"
     rescue Exception => err
       log_exception err
@@ -29,10 +28,6 @@ class Glove < Sinatra::Base
   
   before do
     log_request "Before", request, status
-    log Dir.pwd
-    log File.dirname(__FILE__)
-    log settings.public_folder
-    log settings.root
   end
 
   helpers do
@@ -86,6 +81,7 @@ class Glove < Sinatra::Base
   end
 
   get '/post/:id' do
+    # handle errors
     protected!
     @post = DataTable.where(smssid: params[:id]).first
     @post = DataArchiveTable.where(smssid: params[:id]).first if @post.nil?
@@ -95,9 +91,30 @@ class Glove < Sinatra::Base
 
   get '/posts' do
     protected!
-    @posts = get_posts
-    @images = Media.all
+    # @posts = get_posts
+    # @images = Media.all
     erb :posts
+  end
+
+  post '/posts.json' do
+    # protected!
+    content_type :json
+    ActiveRecord::Base.include_root_in_json = false
+    posts = get_posts.as_json
+    posts = posts.each do |post|
+      post["smsdatetime"] = post["smsdatetime"].localtime.strftime("%l:%M %p - %e %b %Y")
+    end
+    images = Media.all
+    images.each do |image|
+      posts.each do |post|
+        if post["smssid"] == image.message_sid
+          post["url"] = Array.new unless post["url"]
+          post["url"] << image.url
+          break
+        end
+      end
+    end
+    posts.to_json
   end
 
   after do
@@ -106,6 +123,6 @@ class Glove < Sinatra::Base
 
   private
   def get_posts
-    DataTable.order('smsdatetime DESC').all + DataArchiveTable.order('smsdatetime DESC').all
+    DataArchiveTable.order('smsdatetime ASC').select("smssid, smsdatetime, body").all + DataTable.order('smsdatetime ASC').select("smssid, smsdatetime, body").all
   end
 end
