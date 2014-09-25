@@ -91,8 +91,6 @@ class Glove < Sinatra::Base
 
   get '/posts' do
     protected!
-    # @posts = get_posts
-    # @images = Media.all
     erb :posts
   end
 
@@ -103,6 +101,7 @@ class Glove < Sinatra::Base
     posts = get_posts.as_json
     posts = posts.each do |post|
       post["smsdatetime"] = post["smsdatetime"].localtime.strftime("%l:%M %p - %e %b %Y")
+      post["mention"] = Register.mentioned_by(post["from"]).downcase
     end
     images = Media.all
     images.each do |image|
@@ -123,6 +122,6 @@ class Glove < Sinatra::Base
 
   private
   def get_posts
-    DataArchiveTable.order('smsdatetime ASC').select("smssid, smsdatetime, body").all + DataTable.order('smsdatetime ASC').select("smssid, smsdatetime, body").all
+    DataArchiveTable.order('smsdatetime ASC').select("smssid, smsdatetime, body, [from]").all + DataTable.order('smsdatetime ASC').select("smssid, smsdatetime, body, [from]").all
   end
 end

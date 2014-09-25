@@ -107,19 +107,24 @@ img {
     left: 250px;
 }
 
+.feed_mention {
+    color: #598648;
+    font: 35px 'Special Elite', Verdana, Arial, Helvetica, sans-serif;
+}
+
 .feed_text {
     font: italic bold 30px Jura, Verdana, Arial, Helvetica, sans-serif;
 }
 
 .feed_timestamp {
-    font: bold 16px Verdana, Arial, Helvetica, sans-serif;
+    font: 16px 'Special Elite', Verdana, Arial, Helvetica, sans-serif;
     white-space:nowrap;
+    color: #FFF;
 }
 
 #posts_title {
     color: #FFF;
-    font-family: startrek, Verdana, Arial, Helvitica, sans-serif;
-    font-size: 44px;
+    font: bold 28px 'Rock Salt', Verdana, Arial, Helvitica, sans-serif;
     height: 55px;
-    margin-left: 70px;
+    margin-left: 75px;
 }

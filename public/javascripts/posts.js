@@ -36,7 +36,7 @@ function addNewPosts(posts) {
                 imagesElements +
                 "<div class=\"feed_caption\">" +
                 "<blockquote>" +
-                "<p class=\"feed_text\">" + posts[index].body +
+                "<p><span class=\"feed_mention\">" + posts[index].mention + ": </span><span class=\"feed_text\">" + posts[index].body + "</span>" +
                 "<br/>" +
                 "<span class=\"feed_timestamp\">" + posts[index].smsdatetime + "</span>" +
                 "</p>" +
