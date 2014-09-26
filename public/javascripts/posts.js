@@ -1,4 +1,17 @@
 $(document).ready(function() {
+    $("#posts").magnificPopup({
+        delegate: 'a',
+        type: 'image',
+        closeOnContentClick: true,
+        closeOnBgClick: true,
+        zoom: {
+            enabled: true,
+            duration: 300,
+            opener: function(openerElement) {
+                return openerElement.find('div');
+            }
+        }
+    });
     makeAjaxCallForNewPosts();
     poll();
 });
@@ -29,7 +42,11 @@ function addNewPosts(posts) {
             var images = posts[index].url;
             var imagesElements = "";
             for (image in images) {
-                imagesElements += "<div class=\"feed_image\" style=\"background-image: url('" + images[image] + "')\"></div>";
+                imagesElements += "<a href=\"" + images[image] + "\" title=\"" + posts[index].mention + ": " + posts[index].body + "\"><div class=\"feed_image\" style=\"background-image: url('" + images[image] + "')\"></div></a>";
+            }
+            if (images == null) {
+                var logo = "/images/color_oncolor.png";
+                imagesElements += "<div class=\"feed_image\" style=\"background-image: url('" + logo + "')\"></div>";
             }
             var newPost = $(
                 "<div class=\"post hide\" id=\""+ posts[index].smssid +"\">" +
