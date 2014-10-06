@@ -76,6 +76,7 @@ class Glove < Sinatra::Base
   end
 
   get '/feed/rss' do
+    protected!
     @posts = get_posts
     builder :rss
   end
@@ -95,10 +96,19 @@ class Glove < Sinatra::Base
   end
 
   post '/posts.json' do
-    # protected!
+    protected!
     content_type :json
+    get_posts.to_json
+  end
+
+  after do
+    log_request "After", request, status
+  end
+
+  private
+  def get_posts
     ActiveRecord::Base.include_root_in_json = false
-    posts = get_posts.as_json
+    posts = (DataArchiveTable.order('smsdatetime ASC').select("smssid, smsdatetime, body, [from]").all + DataTable.order('smsdatetime ASC').select("smssid, smsdatetime, body, [from]").all).as_json
     posts = posts.each do |post|
       post["smsdatetime"] = post["smsdatetime"].localtime.strftime("%l:%M %p - %e %b %Y")
       post["mention"] = Register.mentioned_by(post["from"]).downcase
@@ -113,15 +123,6 @@ class Glove < Sinatra::Base
         end
       end
     end
-    posts.to_json
-  end
-
-  after do
-    log_request "After", request, status
-  end
-
-  private
-  def get_posts
-    DataArchiveTable.order('smsdatetime ASC').select("smssid, smsdatetime, body, [from]").all + DataTable.order('smsdatetime ASC').select("smssid, smsdatetime, body, [from]").all
+    posts
   end
 end

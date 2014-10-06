@@ -1,9 +1,11 @@
 $(document).ready(function() {
     getImgSize($("#polaroid_image img"));
-    $(".polaroid").fadeIn(3000);
-    $("#polaroid_image img").fadeIn(3000);
-    jQuery("#caption").fitText();
-    jQuery("#feed_text").fitText();
+    $(".polaroid").delay(300).fadeIn(500);
+
+    var image = $("#polaroid_image img");
+    setTimeout(function() {
+       image.animate({opacity: '1'});
+    }, 20);
 });
 
 function getImgSize(img) {
@@ -14,7 +16,6 @@ function getImgSize(img) {
         var width = newImg.width;
         var newHeight = img.height();
         var newWidth = Math.ceil(width * (newHeight / height));
-        console.log('The actual image size is ' + newWidth + '*' + newHeight);
 
         var polaroidBackground = $("#polaroid_background");
         polaroidBackground.css("height", newHeight+"px");

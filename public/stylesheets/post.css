@@ -69,7 +69,11 @@ img {
 
 .hide {
     display:none;
-    width: 0;
+    /*width: 0;*/
+}
+
+.visual_hide {
+    opacity: 0;
 }
 
 #posts {

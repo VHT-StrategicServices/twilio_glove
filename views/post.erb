@@ -8,7 +8,7 @@
   <% @images.each do |image| %>
       <div class="polaroid hide">
         <div id="polaroid_background"></div>
-        <div id="polaroid_image"><a href="<%= image.url %>"><img class="hide" src="<%= image.url %>"/></a></div>
+        <div id="polaroid_image"><a href="<%= image.url %>"><img class="visual_hide" src="<%= image.url %>"/></a></div>
         <div id="caption"><%= @post.body %></div>
       </div>
   <% end %>

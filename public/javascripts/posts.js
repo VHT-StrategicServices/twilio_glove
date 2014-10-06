@@ -4,6 +4,9 @@ $(document).ready(function() {
         type: 'image',
         closeOnContentClick: true,
         closeOnBgClick: true,
+        gallery: {
+            enabled: true
+        },
         zoom: {
             enabled: true,
             duration: 300,
@@ -25,6 +28,8 @@ function poll() {
 function makeAjaxCallForNewPosts() {
     $.ajax({
         url: "/posts.json",
+        username: "feed",
+        password: "B1sCu1t",
         type: "POST",
         success: function(data) {
             addNewPosts(data);
