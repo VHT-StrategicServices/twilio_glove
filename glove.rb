@@ -113,6 +113,11 @@ class Glove < Sinatra::Base
       post["smsdatetime"] = post["smsdatetime"].localtime.strftime("%l:%M %p - %e %b %Y")
       post["mention"] = Register.mentioned_by(post["from"]).downcase
     end
+    posts = add_media posts
+    combine_text_with_media posts
+  end
+
+  def add_media posts
     images = Media.all
     images.each do |image|
       posts.each do |post|
@@ -124,5 +129,27 @@ class Glove < Sinatra::Base
       end
     end
     posts
+  end
+
+  def combine_text_with_media posts
+    posts.each_with_index { |post, index|
+      if post["body"] == "" && post["url"] != ""
+        previous_post = posts[index-1]
+        next_post = posts[index+1]
+        if should_combine_posts post, previous_post
+          post["body"] = previous_post["body"]
+          previous_post["delete"] = true
+        elsif should_combine_posts post, next_post
+          post["body"] = next_post["body"]
+          next_post["delete"] = true
+        end
+      end
+    }
+    posts.reject! { |post| post["delete"] }
+    posts
+  end
+
+  def should_combine_posts post, other_post
+    other_post["url"].nil? && post["smsdatetime"] == other_post["smsdatetime"] && other_post["from"] == post["from"]
   end
 end
