@@ -47,7 +47,7 @@ function makeAjaxCallForNewPosts() {
 
 function addNewPosts(posts) {
     var postsElement = $("#posts");
-    var isAdmin = true; //$('#admin').val() == 'true'; // change this
+    var isAdmin = $('#admin').val() == 'true';
     for (index in posts) {
         if (!postsElement.find("#"+posts[index].smssid).length) {
             var images = posts[index].url;
