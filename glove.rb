@@ -39,7 +39,7 @@ class Glove < Sinatra::Base
 
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['feed', 'B1sCu1t']
+      @auth.provided? and @auth.basic? and @auth.credentials and (@auth.credentials == ['feed', 'B1sCu1t'] || @auth.credentials == ['admin', 'B085B1sCu1t'])
     end
   end
 
@@ -86,12 +86,24 @@ class Glove < Sinatra::Base
     protected!
     @post = DataTable.where(smssid: params[:id]).first
     @post = DataArchiveTable.where(smssid: params[:id]).first if @post.nil?
-    @images = Media.where(message_sid: @post.smssid)
+    @images = Media.where(message_sid: params[:id])
     erb :post
+  end
+
+  delete '/post/:id' do
+    protected!
+    @post = DataTable.where(smssid: params[:id]).first
+    @post.destroy if @post
+    @post = DataArchiveTable.where(smssid: params[:id]).first
+    @post.destroy if @post
+    @images = Media.where(message_sid: params[:id])
+    @images.each{|image| image.destroy} if @images
+    200
   end
 
   get '/posts' do
     protected!
+    @admin = @auth.credentials[0] == 'admin'
     erb :posts
   end
 

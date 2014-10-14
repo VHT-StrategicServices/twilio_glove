@@ -1,4 +1,11 @@
 $(document).ready(function() {
+    initializeMagnific();
+    makeAjaxCallForNewPosts();
+    addClickHandlers();
+    poll();
+});
+
+function initializeMagnific() {
     $("#posts").magnificPopup({
         delegate: 'a',
         type: 'image',
@@ -15,9 +22,7 @@ $(document).ready(function() {
             }
         }
     });
-    makeAjaxCallForNewPosts();
-    poll();
-});
+}
 
 function poll() {
     setTimeout(function() {
@@ -42,6 +47,7 @@ function makeAjaxCallForNewPosts() {
 
 function addNewPosts(posts) {
     var postsElement = $("#posts");
+    var isAdmin = true; //$('#admin').val() == 'true'; // change this
     for (index in posts) {
         if (!postsElement.find("#"+posts[index].smssid).length) {
             var images = posts[index].url;
@@ -53,6 +59,7 @@ function addNewPosts(posts) {
                 var logo = "/images/color_oncolor.png";
                 imagesElements += "<div class=\"feed_image\" style=\"background-image: url('" + logo + "')\"></div>";
             }
+            var deleteElement = (isAdmin ? "<div class=\"delete\"><button class=\"trash\"></button></div>" : "");
             var newPost = $(
                 "<div class=\"post hide\" id=\""+ posts[index].smssid +"\">" +
                 imagesElements +
@@ -64,9 +71,29 @@ function addNewPosts(posts) {
                 "</p>" +
                 "</blockquote>" +
                 "</div>" +
+                deleteElement +
                 "</div>");
             postsElement.prepend(newPost);
             newPost.toggle("hide").animate({width: "99%"},500);
         }
     }
+}
+
+function addClickHandlers() {
+    $("body").on("click", ".trash", function(){
+        var id = $(this).parent().parent().attr('id');
+        $.ajax({
+            url: "/post/" + id,
+            username: "feed",
+            password: "B1sCu1t",
+            type: "DELETE",
+            success: function(data) {
+                removePost(id);
+            }
+        });
+    });
+}
+
+function removePost(id) {
+    $("#" + id).hide('slow', function(){ $("#" + id).remove()});
 }

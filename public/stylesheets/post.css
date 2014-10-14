@@ -132,3 +132,20 @@ img {
     height: 55px;
     margin-left: 75px;
 }
+
+.delete {
+    right: 3%;
+    margin-top: 2.15%;
+}
+
+button.trash {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background: transparent url('/images/trash-48.png') 0 0 no-repeat;
+    height: 48px;
+    width: 48px;
+}
+
+button.trash:before { background-position: 0 0; }
+button.trash:hover { background-position: 0 -48px; }
